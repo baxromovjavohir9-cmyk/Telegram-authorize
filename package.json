@@ -1,0 +1,19 @@
+{
+  "name": "telegram-login",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Faqat Telegram orqali kirish mumkin bo'lgan veb-sahifa",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --env-file=.env server.js"
+  },
+  "engines": {
+    "node": ">=20.6"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

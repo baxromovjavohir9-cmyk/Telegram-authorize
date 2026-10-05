@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kirish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #e6f0f7;
+      --surface: #ffffff;
+      --ink: #11243a;
+      --muted: #52687e;
+      --line: #b9cfe0;
+      --accent: #1a7fb8;
+      --accent-ink: #ffffff;
+      --error-bg: #fbe9e7;
+      --error-ink: #8c1d14;
+      --font: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0e1b2a;
+        --surface: #15283c;
+        --ink: #eaf3fa;
+        --muted: #9db2c6;
+        --line: #2b4560;
+        --accent: #4db3e6;
+        --accent-ink: #0e1b2a;
+        --error-bg: #3a1a18;
+        --error-ink: #ffb4ab;
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 1.5rem;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+
+    main { width: 100%; max-width: 27rem; }
+
+    .mark {
+      display: block;
+      width: 100%;
+      max-width: 18rem;
+      height: auto;
+      margin: 0 0 1.75rem -0.25rem;
+      color: var(--accent);
+    }
+    .mark .trail { stroke-dasharray: 4 7; }
+    @media (prefers-reduced-motion: no-preference) {
+      .mark .trail { animation: fade 1.6s ease-out 1 both; }
+      .mark .plane { animation: glide 1.6s cubic-bezier(.2,.7,.2,1) 1 both; }
+      @keyframes glide {
+        from { transform: translate(-70px, 38px); opacity: 0; }
+        to   { transform: translate(0, 0); opacity: 1; }
+      }
+      @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+    }
+
+    h1 {
+      margin: 0 0 0.6rem;
+      font-size: clamp(1.9rem, 6vw, 2.5rem);
+      line-height: 1.1;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .lead { margin: 0 0 1.75rem; color: var(--muted); max-width: 32ch; }
+
+    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; }
+
+    button.btn, a.btn {
+      font: inherit;
+      font-weight: 500;
+      display: inline-block;
+      padding: 0.7rem 1.2rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    button.btn:hover, a.btn:hover { border-color: var(--accent); color: var(--accent); }
+    button.primary, a.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--accent-ink);
+      font-weight: 700;
+    }
+    button.primary:hover, a.primary:hover { color: var(--accent-ink); filter: brightness(1.08); }
+    button:disabled { opacity: 0.6; cursor: default; }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+    .status { margin: 0 0 1.25rem; color: var(--ink); }
+    .link-btn {
+      font: inherit;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--muted);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .note {
+      margin: 1.5rem 0 0;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+      font-size: 0.875rem;
+      color: var(--muted);
+      max-width: 40ch;
+    }
+
+    .alert {
+      margin: 0 0 1.25rem;
+      padding: 0.75rem 0.9rem;
+      border-radius: 0.5rem;
+      background: var(--error-bg);
+      color: var(--error-ink);
+      font-size: 0.9375rem;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 0 0 1.5rem;
+      padding: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+    }
+    .avatar {
+      width: 3.5rem;
+      height: 3.5rem;
+      flex: none;
+      border-radius: 50%;
+      background: var(--bg);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--accent);
+      border: 1px solid var(--line);
+    }
+    .profile-name { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
+    .profile-meta { margin: 0; color: var(--muted); font-size: 0.875rem; overflow-wrap: anywhere; }
+
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <main>
+    <svg class="mark" viewBox="0 0 240 120" fill="none" stroke="currentColor"
+         stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path class="trail" d="M6 112 C 50 112, 70 70, 118 62" />
+      <g class="plane">
+        <path d="M120 60 L228 16 L196 104 L158 78 Z" />
+        <path d="M228 16 L158 78" />
+        <path d="M158 78 L152 100 L136 82" />
+      </g>
+    </svg>
+
+    <!-- Kirmagan foydalanuvchi -->
+    <section id="guest" hidden>
+      <h1 id="guest-title">Telegram orqali kiring</h1>
+      <p class="lead" id="guest-lead">Parol kerak emas. Telegram bot sizga xabar yuboradi, ruxsat bersangiz kifoya.</p>
+      <p id="error" class="alert" role="alert" hidden></p>
+
+      <div id="idle" class="actions">
+        <button class="btn primary" id="start" type="button">Telegram bilan kirish</button>
+      </div>
+
+      <div id="waiting" hidden>
+        <p class="status" id="wait-text" aria-live="polite">
+          Telegram'ni oching va botdagi «Ruxsat berish» tugmasini bosing.
+        </p>
+        <div class="actions">
+          <a class="btn primary" id="open-link" href="#" target="_blank" rel="noopener">Telegram'ni ochish</a>
+          <button class="link-btn" id="cancel" type="button">Bekor qilish</button>
+        </div>
+      </div>
+
+      <p class="note">
+        Biz faqat ismingiz va username'ingizni olamiz. Telefon raqamingiz berilmaydi.
+        So'rov 5 daqiqa amal qiladi.
+      </p>
+    </section>
+
+    <!-- Kirgan foydalanuvchi -->
+    <section id="member" hidden>
+      <h1 id="greeting">Salom!</h1>
+      <p class="lead">Siz Telegram orqali kirdingiz.</p>
+      <div class="profile">
+        <div id="avatar" class="avatar" aria-hidden="true"></div>
+        <div>
+          <p class="profile-name" id="name"></p>
+          <p class="profile-meta" id="meta"></p>
+        </div>
+      </div>
+      <button class="btn" id="logout" type="button">Chiqish</button>
+    </section>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let pollTimer = null;
+
+    function stopPolling() {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
+
+    function showError(text) {
+      $("error").textContent = text;
+      $("error").hidden = !text;
+    }
+
+    function showIdle(errorText = "") {
+      stopPolling();
+      showError(errorText);
+      $("idle").hidden = false;
+      $("waiting").hidden = true;
+      $("guest-title").textContent = "Telegram orqali kiring";
+      $("guest-lead").hidden = false;
+      $("start").disabled = false;
+    }
+
+    function showWaiting(url) {
+      showError("");
+      $("idle").hidden = true;
+      $("waiting").hidden = false;
+      $("guest-title").textContent = "Telegram'da tasdiqlang";
+      $("guest-lead").hidden = true;
+      $("wait-text").textContent =
+        "Telegram'ni oching va botdagi «Ruxsat berish» tugmasini bosing.";
+      $("open-link").href = url;
+    }
+
+    function pollStatus(token) {
+      stopPolling();
+      pollTimer = setInterval(async () => {
+        try {
+          const res = await fetch(`/auth/status?token=${encodeURIComponent(token)}`, {
+            cache: "no-store",
+          });
+          const { status, opened } = await res.json();
+
+          if (status === "approved") {
+            stopPolling();
+            location.reload();
+          } else if (status === "denied") {
+            showIdle("Kirish rad etildi.");
+          } else if (status === "expired") {
+            showIdle("Vaqt tugadi. Qaytadan urinib ko'ring.");
+          } else if (opened) {
+            $("wait-text").textContent =
+              "Xabar yuborildi. Telegram'da «Ruxsat berish» tugmasini bosing.";
+          }
+        } catch {
+          /* tarmoq xatosi: keyingi urinishda qayta tekshiramiz */
+        }
+      }, 2000);
+    }
+
+    async function startLogin() {
+      $("start").disabled = true;
+      showError("");
+      try {
+        const res = await fetch("/auth/start", { method: "POST" });
+        if (res.status === 429) {
+          throw new Error("Juda ko'p urinish bo'ldi. Bir necha daqiqadan keyin qaytadan urinib ko'ring.");
+        }
+        if (!res.ok) throw new Error("Server hozir javob bermayapti. Keyinroq urinib ko'ring.");
+
+        const { token, url } = await res.json();
+        showWaiting(url);
+        window.open(url, "_blank", "noopener");
+        pollStatus(token);
+      } catch (err) {
+        showIdle(err.message);
+      }
+    }
+
+    function showGuest() {
+      $("guest").hidden = false;
+      $("start").addEventListener("click", startLogin);
+      $("cancel").addEventListener("click", () => showIdle());
+    }
+
+    function showMember(user) {
+      const fullName =
+        [user.first_name, user.last_name].filter(Boolean).join(" ") || "Foydalanuvchi";
+      $("member").hidden = false;
+      $("greeting").textContent = `Salom, ${user.first_name || fullName}!`;
+      $("name").textContent = fullName;
+      $("meta").textContent = user.username ? `@${user.username}` : `ID: ${user.id}`;
+      $("avatar").textContent = fullName.charAt(0).toUpperCase();
+
+      $("logout").addEventListener("click", async () => {
+        await fetch("/auth/logout", { method: "POST" });
+        location.reload();
+      });
+    }
+
+    (async () => {
+      try {
+        const res = await fetch("/api/me", { cache: "no-store" });
+        const { user } = await res.json();
+        user ? showMember(user) : showGuest();
+      } catch {
+        showGuest();
+        showError("Serverga ulanib bo'lmadi. Sahifani yangilab ko'ring.");
+      }
+    })();
+  </script>
+</body>
+</html>
