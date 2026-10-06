@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Admin panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #e6f0f7;
+      --surface: #ffffff;
+      --ink: #11243a;
+      --muted: #52687e;
+      --line: #b9cfe0;
+      --accent: #1a7fb8;
+      --accent-ink: #ffffff;
+      --warn-bg: #fff3d6;
+      --warn-ink: #6b4a00;
+      --error-bg: #fbe9e7;
+      --error-ink: #8c1d14;
+      --font: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0e1b2a;
+        --surface: #15283c;
+        --ink: #eaf3fa;
+        --muted: #9db2c6;
+        --line: #2b4560;
+        --accent: #4db3e6;
+        --accent-ink: #0e1b2a;
+        --warn-bg: #3a2f10;
+        --warn-ink: #ffd98a;
+        --error-bg: #3a1a18;
+        --error-ink: #ffb4ab;
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      min-height: 100svh;
+      padding: 1.5rem;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    main { width: 100%; max-width: 64rem; margin: 0 auto; }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    h1 { margin: 0; font-size: clamp(1.7rem, 5vw, 2.2rem); font-weight: 800; letter-spacing: -0.02em; }
+    a { color: var(--accent); }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat {
+      padding: 0.9rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+    }
+    .stat-num { display: block; font-size: 1.9rem; font-weight: 800; line-height: 1.1; }
+    .stat-label { color: var(--muted); font-size: 0.875rem; }
+
+    .toolbar { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; }
+    input[type="search"] {
+      flex: 1 1 14rem;
+      font: inherit;
+      padding: 0.65rem 0.9rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+    }
+    button.btn {
+      font: inherit;
+      font-weight: 500;
+      padding: 0.65rem 1.1rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+    }
+    button.btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .banner {
+      margin: 0 0 1rem;
+      padding: 0.75rem 0.9rem;
+      border-radius: 0.5rem;
+      font-size: 0.9375rem;
+    }
+    .banner.warn { background: var(--warn-bg); color: var(--warn-ink); }
+    .banner.error { background: var(--error-bg); color: var(--error-ink); }
+
+    .table-wrap {
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 0.75rem;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
+    th, td { padding: 0.7rem 0.9rem; text-align: left; white-space: nowrap; }
+    th {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--muted);
+      border-bottom: 1px solid var(--line);
+    }
+    tbody tr + tr td { border-top: 1px solid var(--line); }
+    td.num, th.num { text-align: right; }
+    .name { font-weight: 700; white-space: normal; min-width: 9rem; }
+    .muted { color: var(--muted); }
+    .empty { padding: 2rem 1rem; text-align: center; color: var(--muted); }
+
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Admin panel</h1>
+      <a href="/">← Saytga qaytish</a>
+    </header>
+
+    <p id="warn" class="banner warn" hidden>
+      Ma'lumotlar bazasi ulanmagan: ro'yxat vaqtinchalik faylda saqlanmoqda va server qayta
+      ishga tushganda o'chib ketadi. Doimiy saqlash uchun <code>DATABASE_URL</code> ni qo'shing.
+    </p>
+    <p id="error" class="banner error" role="alert" hidden></p>
+
+    <section class="stats" aria-label="Statistika">
+      <div class="stat"><span class="stat-num" id="s-total">–</span><span class="stat-label">Jami foydalanuvchi</span></div>
+      <div class="stat"><span class="stat-num" id="s-day">–</span><span class="stat-label">Oxirgi 24 soatda kirgan</span></div>
+      <div class="stat"><span class="stat-num" id="s-week">–</span><span class="stat-label">Oxirgi 7 kunda kirgan</span></div>
+    </section>
+
+    <div class="toolbar">
+      <input type="search" id="q" placeholder="Ism, username yoki ID bo'yicha qidirish" aria-label="Qidirish">
+      <button class="btn" id="refresh" type="button">Yangilash</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="num">№</th>
+            <th>Ism</th>
+            <th>Username</th>
+            <th>Telegram ID</th>
+            <th>Birinchi kirish</th>
+            <th>Oxirgi kirish</th>
+            <th class="num">Kirishlar</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <p class="empty" id="empty" hidden></p>
+    </div>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let users = [];
+
+    const fmt = (iso) =>
+      new Date(iso).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
+
+    function cell(text, className) {
+      const td = document.createElement("td");
+      td.textContent = text;
+      if (className) td.className = className;
+      return td;
+    }
+
+    function render() {
+      const term = $("q").value.trim().toLowerCase();
+      const list = users.filter((u) =>
+        !term ||
+        `${u.first_name} ${u.last_name} ${u.username} ${u.id}`.toLowerCase().includes(term)
+      );
+
+      const body = $("rows");
+      body.replaceChildren();
+
+      list.forEach((u, i) => {
+        const tr = document.createElement("tr");
+        tr.appendChild(cell(String(i + 1), "num muted"));
+        tr.appendChild(
+          cell([u.first_name, u.last_name].filter(Boolean).join(" ") || "—", "name")
+        );
+
+        const userTd = document.createElement("td");
+        if (/^[A-Za-z0-9_]{3,32}$/.test(u.username || "")) {
+          const a = document.createElement("a");
+          a.href = `https://t.me/${u.username}`;
+          a.target = "_blank";
+          a.rel = "noopener";
+          a.textContent = `@${u.username}`;
+          userTd.appendChild(a);
+        } else {
+          userTd.textContent = "—";
+          userTd.className = "muted";
+        }
+        tr.appendChild(userTd);
+
+        tr.appendChild(cell(u.id, "muted"));
+        tr.appendChild(cell(fmt(u.first_login_at)));
+        tr.appendChild(cell(fmt(u.last_login_at)));
+        tr.appendChild(cell(String(u.login_count), "num"));
+        body.appendChild(tr);
+      });
+
+      const empty = $("empty");
+      empty.hidden = list.length > 0;
+      if (!list.length) {
+        empty.textContent = users.length
+          ? "Qidiruv bo'yicha hech narsa topilmadi."
+          : "Hozircha hech kim kirmagan.";
+      }
+    }
+
+    function renderStats() {
+      const now = Date.now();
+      const since = (ms) =>
+        users.filter((u) => now - new Date(u.last_login_at).getTime() <= ms).length;
+      $("s-total").textContent = users.length;
+      $("s-day").textContent = since(24 * 60 * 60 * 1000);
+      $("s-week").textContent = since(7 * 24 * 60 * 60 * 1000);
+    }
+
+    async function load() {
+      $("refresh").disabled = true;
+      $("error").hidden = true;
+      try {
+        const res = await fetch("/api/admin/users", { cache: "no-store" });
+        if (res.status === 404) {
+          location.href = "/";
+          return;
+        }
+        if (!res.ok) throw new Error("Ro'yxatni yuklab bo'lmadi. Keyinroq qayta urinib ko'ring.");
+        const data = await res.json();
+        users = data.users;
+        $("warn").hidden = data.persistent;
+        renderStats();
+        render();
+      } catch (err) {
+        $("error").textContent = err.message;
+        $("error").hidden = false;
+      } finally {
+        $("refresh").disabled = false;
+      }
+    }
+
+    $("q").addEventListener("input", render);
+    $("refresh").addEventListener("click", load);
+    load();
+  </script>
+</body>
+</html>
